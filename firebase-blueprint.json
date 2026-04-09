@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores nurse and admin profile information.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID from Firebase Auth." },
+        "displayName": { "type": "string", "description": "User's full name." },
+        "email": { "type": "string", "format": "email", "description": "User's email address." },
+        "sancNumber": { "type": "string", "description": "South African Nursing Council registration number." },
+        "role": { "type": "string", "enum": ["nurse", "admin"], "description": "User's role in the system." },
+        "totalCpdPoints": { "type": "number", "description": "Total accumulated CPD points." },
+        "isPremium": { "type": "boolean", "description": "Whether the user has premium access." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the profile was created." }
+      },
+      "required": ["uid", "displayName", "email", "role", "totalCpdPoints", "createdAt"]
+    },
+    "Webinar": {
+      "title": "Webinar",
+      "description": "Represents a CPD accredited webinar.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique webinar ID." },
+        "title": { "type": "string", "description": "Title of the webinar." },
+        "description": { "type": "string", "description": "Detailed description." },
+        "provider": { "type": "string", "description": "Accredited provider name." },
+        "accreditationNumber": { "type": "string", "description": "SANC accreditation number." },
+        "cpdPoints": { "type": "number", "description": "CPD points awarded for completion." },
+        "startTime": { "type": "string", "format": "date-time", "description": "Scheduled start time." },
+        "durationMinutes": { "type": "number", "description": "Duration in minutes." },
+        "zoomLink": { "type": "string", "format": "uri", "description": "Link to the webinar session." },
+        "price": { "type": "number", "description": "Optional price for the webinar." },
+        "quiz": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "correctAnswer": { "type": "number" }
+            }
+          }
+        }
+      },
+      "required": ["id", "title", "provider", "accreditationNumber", "cpdPoints", "startTime", "durationMinutes", "zoomLink", "quiz"]
+    },
+    "Registration": {
+      "title": "Registration",
+      "description": "Tracks user registration and completion of webinars.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique registration ID (usually userId_webinarId)." },
+        "userId": { "type": "string", "description": "ID of the registered user." },
+        "webinarId": { "type": "string", "description": "ID of the webinar." },
+        "registeredAt": { "type": "string", "format": "date-time", "description": "When the user registered." },
+        "attended": { "type": "boolean", "description": "Whether the user attended the session." },
+        "paid": { "type": "boolean", "description": "Whether the webinar was paid for." },
+        "quizScore": { "type": "number", "description": "Score achieved in the assessment." },
+        "certificateIssued": { "type": "boolean", "description": "Whether a certificate has been issued." },
+        "certificateUrl": { "type": "string", "format": "uri", "description": "Link to the generated certificate." }
+      },
+      "required": ["id", "userId", "webinarId", "registeredAt", "attended", "certificateIssued"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    },
+    "/webinars/{webinarId}": {
+      "schema": "Webinar",
+      "description": "Available webinars."
+    },
+    "/registrations/{registrationId}": {
+      "schema": "Registration",
+      "description": "User registrations and CPD records."
+    }
+  }
+}
